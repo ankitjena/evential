@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -11,6 +12,8 @@ import (
 )
 
 var client *mongo.Client
+var ctx context.Context
+var cancel context.CancelFunc
 
 //Connect function establishes connection to the mongo url specified
 func Connect(mongoURL string) {
@@ -19,13 +22,17 @@ func Connect(mongoURL string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
+	ctx, cancel = context.WithTimeout(context.Background(), 10 * time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func() {
-		client.Disconnect(ctx)
-		cancel()
-	}()
+	fmt.Println("Database connected")
+}
+
+//Disconnect function disconnects from the database
+func Disconnect() {
+	fmt.Println("Disconnecting")
+	client.Disconnect(ctx)
+	cancel()
 }
