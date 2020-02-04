@@ -4,12 +4,11 @@ import (
 	"time"
 
 	"github.com/zairza-cetb/evential/lib/common"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // User model
 type User struct {
-	ID primitive.ObjectID `bson:"_id"`
+	ID string `json:"_id"`
 	Username string `json:"username"`
 	Name string `json:"name"`
 	Email string `json:"email"`
@@ -20,7 +19,16 @@ type User struct {
 }
 
 func (u *User) Read(m common.JSON) {
-	u.ID = m["_id"].(primitive.ObjectID)
+	u.ID = m["_id"].(string)
 	u.Username = m["username"].(string)
 	u.Name = m["name"].(string)
+}
+
+// Serialize serializes user data
+func (u *User) Serialize() common.JSON {
+	return common.JSON{
+		"_id": u.ID,
+		"username": u.Username,
+		"name": u.Name,
+	}
 }
