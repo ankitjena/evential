@@ -11,6 +11,7 @@ The project uses `Golang` as the backend language and `React` in the frontend.
 ### Server
 1. Install the server dependencies via `go get -v -u ./...`
 2. Run MongoDB server. If you do not have it configured locally, run `docker-compose up -d` followed by `docker-compose start` to start MongoDB.
+3. Make sure you create a `.env` file with `MONGO_URL`, `PORT` and `JWT_SECRET`.
 3. Run the application from the root of the project using `go run main.go`. The server runs on port `5000`
 
 ### Client
