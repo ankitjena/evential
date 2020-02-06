@@ -10,7 +10,6 @@ import (
 
 	"github.com/zairza-cetb/evential/api"
 	"github.com/zairza-cetb/evential/db"
-	"github.com/zairza-cetb/evential/lib/middlewares"
 )
 
 func main() {
@@ -30,7 +29,6 @@ func main() {
 	
 	app := gin.Default()
 	app.Use(static.Serve("/", static.LocalFile("./client/build", true)))
-	app.Use(middlewares.JWTMiddleware())
 	api.ApplyRoutes(app)
 	
 	app.Run(":" + port)

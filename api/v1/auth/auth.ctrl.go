@@ -3,15 +3,15 @@ package auth
 import (
 	"context"
 	"log"
-	"net/http"
-	"os"
+	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/zairza-cetb/evential/db"
+
 	"github.com/zairza-cetb/evential/db/models"
 	"github.com/zairza-cetb/evential/lib/common"
+	"github.com/zairza-cetb/evential/lib/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
@@ -27,21 +27,6 @@ func hash(pwd string) (string, error) {
 func checkHash(password string, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
-}
-
-//generate jwt token with userdata
-func generateToken(data common.JSON) (string, error) {
-	date := time.Now().Add(time.Minute * 5)
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user": data,
-		"exp": date.Unix(),
-	})
-
-	secretKeyString := os.Getenv("JWT_SECRET")
-
-	tokenString, err := token.SignedString([]byte(secretKeyString))
-	return tokenString, err
 }
 
 //register controller for the /auth/register route
@@ -93,10 +78,7 @@ func register(c *gin.Context) {
 	serialized := user.Serialize()
 
 	//generate jwt token
-	token, _ := generateToken(serialized)
-
-	//set cookie
-	c.SetCookie("token", token, 60*60*24*7, "/", "", http.SameSiteDefaultMode, false, true)
+	token, _ := utils.GenerateToken(serialized)
 
 	c.JSON(200, common.JSON{
 		"user": serialized,
@@ -140,10 +122,7 @@ func login(c *gin.Context) {
 	serialized := userExists.Serialize()
 	
 	// generate jwt token
-	token, _ := generateToken(serialized)
-
-	//set cookie
-	c.SetCookie("token", token, 60*60*24*7, "/", "", http.SameSiteDefaultMode, false, true)
+	token, _ := utils.GenerateToken(serialized)
 
 	c.JSON(200, common.JSON{
 		"user": serialized,
@@ -153,33 +132,26 @@ func login(c *gin.Context) {
 
 //check will renew token when token life in less than 3 days else return nil
 func check(c *gin.Context) {
-	// get user stored in the cookie
-	userRaw, ok := c.Get("user")
-	if !ok {
-		c.AbortWithStatus(401)
-		return
-	}
+	authorization := c.Request.Header.Get("Authorization")
+	sp := strings.Split(authorization, "Bearer ")
+	tokenString := sp[1]
 
-	user := userRaw.(models.User)
+	tokenData, _ := utils.ValidateToken(tokenString)
 
-	tokenExpire := int64(c.MustGet("token_expire").(float64))
+	var user models.User
+	user.Read(tokenData["user"].(common.JSON))
+
+	tokenExpire := tokenData["exp"].(float64)
 	now := time.Now().Unix()
-
-	diff := tokenExpire - now
-
-	if diff < 60*60*24*3 {
-		//renew token if expires in less than 3 days
-		token, _ := generateToken(user.Serialize())
-		c.SetCookie("token", token, 60*60*24*7, "/", "", http.SameSiteDefaultMode, false, true)
-		c.JSON(200, common.JSON{
-			"token": token,
-			"user": user.Serialize(),
-		})
-		return
+	diff := int64(tokenExpire) - now
+	//renew token
+	if diff < 60 * 4 {
+		tokenString, _ = utils.GenerateToken(user.Serialize())
 	}
 
 	c.JSON(200, common.JSON{
-		"token": nil,
+		"token": tokenString,
 		"user": user.Serialize(),
 	})
 }
+
