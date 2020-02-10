@@ -1,8 +1,9 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
 import { register } from './actions'
+import Navbar from '../common/Navbar'
 
-const Register = () => {
+export const RegisterComponent = () => {
   const dispatch = useDispatch()
   return (
     <div>
@@ -10,6 +11,15 @@ const Register = () => {
         Register
       </button>
     </div>
+  )
+}
+
+const Register = () => {
+  return (
+    <>
+      <Navbar />
+      <RegisterComponent />
+    </>
   )
 }
 
