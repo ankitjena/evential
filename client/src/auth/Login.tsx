@@ -1,8 +1,9 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
 import { login } from './actions'
+import Navbar from '../common/Navbar'
 
-const Login = () => {
+export const LoginComponent = () => {
   const dispatch = useDispatch()
   return (
     <div>
@@ -10,6 +11,15 @@ const Login = () => {
         Login
       </button>
     </div>
+  )
+}
+
+const Login = () => {
+  return (
+    <>
+      <Navbar />
+      <LoginComponent />
+    </>
   )
 }
 
