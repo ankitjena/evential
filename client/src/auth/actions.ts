@@ -1,6 +1,6 @@
-import { AuthState } from './reducer'
-import { ThunkAction, ThunkDispatch } from 'redux-thunk'
-import axios from 'axios'
+import { AuthState } from './reducer';
+import { ThunkAction, ThunkDispatch } from 'redux-thunk';
+import axios from 'axios';
 
 export enum AuthActionTypes {
   LOGIN = 'LOGIN',
@@ -9,12 +9,12 @@ export enum AuthActionTypes {
 
 export interface LoginAction {
   type: AuthActionTypes.LOGIN;
-  data: AuthState
+  data: AuthState;
 }
 
 export interface RegisterAction {
   type: AuthActionTypes.REGISTER;
-  data: AuthState
+  data: AuthState;
 }
 
 export function login(): ThunkAction<
@@ -27,10 +27,10 @@ export function login(): ThunkAction<
     const res = await axios.post('/auth/login', {
       username: 'ankitjena',
       password: 'evential'
-    })
+    });
 
-    console.log("works")
-    console.log(res)
+    console.log('works');
+    console.log(res);
 
     return dispatch({
       type: AuthActionTypes.LOGIN,
@@ -38,8 +38,8 @@ export function login(): ThunkAction<
         isAuthenticated: true,
         user: res.data.user
       }
-    })
-  }
+    });
+  };
 }
 
 export function register(): ThunkAction<
@@ -48,14 +48,16 @@ export function register(): ThunkAction<
   undefined,
   RegisterAction
 > {
-  return async (dispatch: ThunkDispatch<AuthState, undefined, RegisterAction>) => {
+  return async (
+    dispatch: ThunkDispatch<AuthState, undefined, RegisterAction>
+  ) => {
     const res = await axios.post('/auth/register', {
-      username: "ankitjena",
-      email: "ankitjena13@gmail.com",
-      name: "Ankit Jena",
-      phone: "8598033713",
-      password: "evential"
-    })
+      username: 'ankitjena',
+      email: 'ankitjena13@gmail.com',
+      name: 'Ankit Jena',
+      phone: '8598033713',
+      password: 'evential'
+    });
 
     return dispatch({
       type: AuthActionTypes.REGISTER,
@@ -63,6 +65,6 @@ export function register(): ThunkAction<
         isAuthenticated: true,
         user: res.data.user
       }
-    })
-  }
+    });
+  };
 }

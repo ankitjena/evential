@@ -4,5 +4,9 @@
     "javascriptreact",
     "typescript",
     "typescriptreact"
-  ]
+  ],
+  "eslint.workingDirectories": ["client"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  }
 }
