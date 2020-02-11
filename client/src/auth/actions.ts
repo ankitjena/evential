@@ -56,7 +56,7 @@ export function login(
   return async (dispatch: ThunkDispatch<AuthState, undefined, LoginAction>) => {
     let res: AxiosResponse;
     try {
-      res = await axios.post('/auth/login', data);
+      res = await axios.post('/api/v1/auth/login', data);
       localStorage.setItem('token', res.data.token);
     } catch (err) {
       if (err.response.status === 401) {
@@ -97,7 +97,7 @@ export function register(
   return async (
     dispatch: ThunkDispatch<AuthState, undefined, RegisterAction>
   ) => {
-    const res = await axios.post('/auth/register', data);
+    const res = await axios.post('/api/v1/auth/register', data);
 
     if (res.status === 204) {
       return dispatch({
@@ -128,7 +128,7 @@ export function check(): ThunkAction<
 > {
   return async (dispatch: ThunkDispatch<AuthState, undefined, CheckAction>) => {
     const token = localStorage.getItem('token');
-    const res = await axios.get('/auth/check', {
+    const res = await axios.get('/api/v1/auth/check', {
       headers: { Authorization: `Bearer ${token}` }
     });
 

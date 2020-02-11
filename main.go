@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
@@ -22,14 +22,14 @@ func main() {
 	//Get mongo url from env
 	mongoURL := os.Getenv("MONGO_URL")
 	port := os.Getenv("PORT")
-	
+
 	db.Connect(mongoURL)
 
 	defer db.Disconnect()
-	
+
 	app := gin.Default()
 	app.Use(static.Serve("/", static.LocalFile("./client/build", true)))
 	api.ApplyRoutes(app)
-	
+
 	app.Run(":" + port)
 }

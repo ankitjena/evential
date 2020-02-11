@@ -4,7 +4,7 @@ import thunk from 'redux-thunk';
 import rootReducer, { AppState } from './helpers/rootReducer';
 import Home from './home/Home';
 import './App.css';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 import Login from './auth/Login';
 import Register from './auth/Register';
 import { useSelector, Provider, useDispatch } from 'react-redux';
