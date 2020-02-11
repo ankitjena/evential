@@ -1,13 +1,14 @@
 import React, { FC } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from '../helpers/rootReducer';
 import '../styles/tailwind.css';
 import './Navbar.css';
 import { Link } from 'react-router-dom';
+import { logout } from '../auth/actions';
 
 const Navbar: React.FC = () => {
   const authState = useSelector((state: AppState) => state.AuthReducer);
-  console.log(authState);
+  const dispatch = useDispatch();
   return (
     <header className="lg:px-16 px-6 bg-white flex flex-wrap items-center lg:py-0 py-2">
       <div className="flex-1 flex justify-between items-center">
@@ -34,22 +35,36 @@ const Navbar: React.FC = () => {
       >
         <nav>
           <ul className="lg:flex items-center justify-between text-base text-gray-700 pt-4 lg:pt-0">
-            <li>
-              <Link
-                to="/auth/login"
-                className="lg:p-4 py-3 px-0 block border-b-2 border-transparent hover:border-indigo-400"
-              >
-                Login
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/auth/register"
-                className="lg:p-4 py-3 px-0 block border-b-2 border-transparent hover:border-indigo-400"
-              >
-                Register
-              </Link>
-            </li>
+            {!authState.isAuthenticated && (
+              <>
+                <li>
+                  <Link
+                    to="/auth/login"
+                    className="lg:p-4 py-3 px-0 block border-b-2 border-transparent hover:border-indigo-400"
+                  >
+                    Login
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/auth/register"
+                    className="lg:p-4 py-3 px-0 block border-b-2 border-transparent hover:border-indigo-400"
+                  >
+                    Register
+                  </Link>
+                </li>
+              </>
+            )}
+            {authState.isAuthenticated && (
+              <li>
+                <div
+                  className="lg:p-4 py-3 cursor-pointer px-0 block border-b-2 border-transparent hover:border-indigo-400"
+                  onClick={() => dispatch(logout())}
+                >
+                  Logout
+                </div>
+              </li>
+            )}
           </ul>
         </nav>
       </div>
