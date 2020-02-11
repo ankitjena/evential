@@ -1,26 +1,39 @@
-import { LoginAction, AuthActionTypes, RegisterAction } from './actions';
+import {
+  LoginAction,
+  AuthActionTypes,
+  RegisterAction,
+  ResponseTypes,
+  CheckAction,
+  LogoutAction
+} from './actions';
 
 export interface AuthState {
   isAuthenticated: boolean;
   user: UserDetails;
+  authResponse: ResponseTypes;
 }
 
 export interface UserDetails {
-  id: string;
+  _id: string;
   username: string;
   name: string;
 }
 
-const initialState: AuthState = {
+export const initialState: AuthState = {
   isAuthenticated: false,
   user: {
-    id: '',
+    _id: '',
     username: '',
     name: ''
-  }
+  },
+  authResponse: ResponseTypes.UNAUTHENTICATED
 };
 
-type AuthReducerActions = LoginAction | RegisterAction;
+type AuthReducerActions =
+  | LoginAction
+  | RegisterAction
+  | CheckAction
+  | LogoutAction;
 
 export default function(
   state: AuthState = initialState,
@@ -28,9 +41,13 @@ export default function(
 ) {
   switch (action.type) {
     case AuthActionTypes.LOGIN:
-      return { ...state, auth: action.data };
+      return { ...action.data };
     case AuthActionTypes.REGISTER:
-      return { ...state, auth: action.data };
+      return { ...action.data };
+    case AuthActionTypes.CHECK:
+      return { ...action.data };
+    case AuthActionTypes.LOGOUT:
+      return { ...action.data };
     default:
       return state;
   }

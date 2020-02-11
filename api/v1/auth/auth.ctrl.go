@@ -36,7 +36,7 @@ func register(c *gin.Context) {
 	//define context for timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	
+
 	//instantiate user collection
 	userDB := db.GetUserDB()
 
@@ -81,7 +81,7 @@ func register(c *gin.Context) {
 	token, _ := utils.GenerateToken(serialized)
 
 	c.JSON(200, common.JSON{
-		"user": serialized,
+		"user":  serialized,
 		"token": token,
 	})
 }
@@ -109,23 +109,25 @@ func login(c *gin.Context) {
 	var userExists models.User
 	err := userDB.FindOne(ctx, bson.M{"username": body.Username}).Decode(&userExists)
 	if err != nil {
-		c.AbortWithStatus(404)
+		c.JSON(404, common.JSON{})
 		return
 	}
 
 	//check if the password is correct
 	if !checkHash(body.Password, userExists.Password) {
-		c.AbortWithStatus(401)
+		c.JSON(401, common.JSON{
+			"error": "Unauthorized",
+		})
 		return
 	}
 
 	serialized := userExists.Serialize()
-	
+
 	// generate jwt token
 	token, _ := utils.GenerateToken(serialized)
 
 	c.JSON(200, common.JSON{
-		"user": serialized,
+		"user":  serialized,
 		"token": token,
 	})
 }
@@ -145,13 +147,12 @@ func check(c *gin.Context) {
 	now := time.Now().Unix()
 	diff := int64(tokenExpire) - now
 	//renew token
-	if diff < 60 * 4 {
+	if diff < 60*4 {
 		tokenString, _ = utils.GenerateToken(user.Serialize())
 	}
 
 	c.JSON(200, common.JSON{
 		"token": tokenString,
-		"user": user.Serialize(),
+		"user":  user.Serialize(),
 	})
 }
-
